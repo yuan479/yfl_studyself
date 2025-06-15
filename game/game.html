@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>碰碰车小游戏</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial Rounded MT Bold', 'Arial', sans-serif;
+        }
+        
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #1a2a6c);
+            overflow: hidden;
+            padding: 20px;
+        }
+        
+        .game-container {
+            display: flex;
+            width: 95%;
+            max-width: 1400px;
+            background: rgba(25, 25, 35, 0.85);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            padding: 20px;
+        }
+        
+        .settings-panel {
+            width: 250px;
+            background: rgba(40, 40, 55, 0.9);
+            border-radius: 15px;
+            padding: 20px;
+            color: #fff;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            margin-right: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .settings-panel h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #4CAF50;
+            text-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+        }
+        
+        .settings-panel select, .settings-panel button {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(60, 60, 80, 0.9);
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .settings-panel select:hover, .settings-panel button:hover {
+            background: rgba(80, 80, 100, 0.9);
+            transform: translateY(-2px);
+        }
+        
+        .settings-panel button {
+            background: linear-gradient(45deg, #2196F3, #21CBF3);
+            font-weight: bold;
+            margin-top: 10px;
+            box-shadow: 0 4px 10px rgba(33, 150, 243, 0.4);
+        }
+        
+        .settings-panel button:active {
+            transform: translateY(1px);
+        }
+        
+        .stats {
+            background: rgba(30, 30, 45, 0.9);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+        
+        .stats h3 {
+            color: #FF9800;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .game-arena {
+            flex: 1;
+            height: 80vh;
+            background: rgba(35, 35, 50, 0.9);
+            border-radius: 15px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.7);
+            border: 3px solid #4A4A6A;
+        }
+        
+        .ball {
+            position: absolute;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            text-align: center;
+            cursor: pointer;
+            user-select: none;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+        }
+        
+        .ball.player {
+            background: radial-gradient(circle at 30% 30%, #2196F3, #0D47A1);
+            border: 2px solid #64B5F6;
+        }
+        
+        .ball.ai {
+            background: radial-gradient(circle at 30% 30%, #F44336, #B71C1C);
+            border: 2px solid #EF9A9A;
+        }
+        
+        .ball-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .ball.highlight {
+            animation: pulse 1.5s infinite;
+            box-shadow: 0 0 20px rgba(255, 255, 100, 0.8);
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .game-info {
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            color: white;
+            font-size: 24px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+            z-index: 10;
+        }
+        
+        .turn-indicator {
+            background: rgba(0, 0, 0, 0.6);
+            padding: 10px 20px;
+            border-radius: 0 0 10px 10px;
+            display: inline-block;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .special-effects {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(30, 30, 45, 0.9);
+            border-radius: 10px;
+        }
+        
+        .effect {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 8px;
+            background: rgba(50, 50, 70, 0.7);
+            border-radius: 6px;
+        }
+        
+        .effect-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            margin-right: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        
+        .player-turn .ball.player {
+            animation: glow-blue 1.5s infinite;
+        }
+        
+        .ai-turn .ball.ai {
+            animation: glow-red 1.5s infinite;
+        }
+        
+        @keyframes glow-blue {
+            0% { box-shadow: 0 0 5px #2196F3; }
+            50% { box-shadow: 0 0 20px #2196F3; }
+            100% { box-shadow: 0 0 5px #2196F3; }
+        }
+        
+        @keyframes glow-red {
+            0% { box-shadow: 0 0 5px #F44336; }
+            50% { box-shadow: 0 0 20px #F44336; }
+            100% { box-shadow: 0 0 5px #F44336; }
+        }
+        
+        .game-message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.85);
+            color: white;
+            padding: 30px 50px;
+            border-radius: 15px;
+            text-align: center;
+            font-size: 32px;
+            z-index: 100;
+            display: none;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+            border: 2px solid gold;
+        }
+        
+        .restart-btn {
+            background: linear-gradient(45deg, #FF9800, #FF5722);
+            border: none;
+            padding: 12px 30px;
+            margin-top: 20px;
+            border-radius: 8px;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .restart-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(255, 152, 0, 0.7);
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="settings-panel">
+            <h2>游戏设置</h2>
+            
+            <div class="player-settings">
+                <h3>玩家属性</h3>
+                <div class="setting-item">
+                    <label>生命值</label>
+                    <input type="range" min="50" max="200" value="100" class="slider" id="playerHealth">
+                </div>
+                
+                <div class="setting-item">
+                    <label>攻击力</label>
+                    <input type="range" min="10" max="50" value="20" class="slider" id="playerAttack">
+                </div>
+                
+                <div class="setting-item">
+                    <label>弹性</label>
+                    <input type="range" min="0.5" max="1" step="0.1" value="0.8" class="slider" id="playerBounce">
+                </div>
+                
+                <div class="setting-item">
+                    <label>大小</label>
+                    <input type="range" min="40" max="80" value="60" class="slider" id="playerSize">
+                </div>
+            </div>
+            
+            <div class="ai-settings">
+                <h3>电脑属性</h3>
+                <div class="setting-item">
+                    <label>生命值</label>
+                    <input type="range" min="50" max="200" value="100" class="slider" id="aiHealth">
+                </div>
+                
+                <div class="setting-item">
+                    <label>攻击力</label>
+                    <input type="range" min="10" max="50" value="20" class="slider" id="aiAttack">
+                </div>
+            </div>
+            
+            <div class="special-effects">
+                <h3>特殊效果</h3>
+                <div class="effect">
+                    <div class="effect-icon" style="background: #FF9800;">F</div>
+                    <span>火焰球: 碰撞时额外伤害</span>
+                </div>
+                <div class="effect">
+                    <div class="effect-icon" style="background: #2196F3;">I</div>
+                    <span>冰霜球: 减速效果</span>
+                </div>
+                <div class="effect">
+                    <div class="effect-icon" style="background: #4CAF50;">H</div>
+                    <span>治疗球: 恢复生命值</span>
+                </div>
+            </div>
+            
+            <div class="controls">
+                <button id="startBtn">开始游戏</button>
+                <button id="resetBtn">重置游戏</button>
+            </div>
+            
+            <div class="stats">
+                <h3>游戏状态</h3>
+                <p>回合: <span id="roundCount">1</span></p>
+                <p>玩家剩余小球: <span id="playerBalls">3</span></p>
+                <p>电脑剩余小球: <span id="aiBalls">3</span></p>
+                <p>状态: <span id="gameStatus">准备开始</span></p>
+            </div>
+        </div>
+        
+        <div class="game-arena" id="gameArena">
+            <div class="game-info">
+                <div class="turn-indicator">当前回合: <span id="turnText">玩家回合</span></div>
+            </div>
+            <div class="game-message" id="gameMessage">
+                <div id="messageText">游戏胜利!</div>
+                <button class="restart-btn" id="restartBtn">重新开始</button>
+            </div>
+            <!-- 小球将通过JS动态生成 -->
+        </div>
+    </div>
+
+    <script>
+        // 游戏配置
+        const config = {
+            arenaPadding: 20,
+            playerBalls: 3,
+            aiBalls: 3,
+            friction: 0.98,
+            minSpeed: 0.5
+        };
+
+        // 游戏状态
+        const gameState = {
+            balls: [],
+            isDragging: false,
+            dragBall: null,
+            startX: 0,
+            startY: 0,
+            currentTurn: 'player', // 'player' 或 'ai'
+            round: 1,
+            playerBallsRemaining: config.playerBalls,
+            aiBallsRemaining: config.aiBalls,
+            gameStarted: false,
+            gameOver: false
+        };
+
+        // DOM 元素
+        const gameArena = document.getElementById('gameArena');
+        const gameMessage = document.getElementById('gameMessage');
+        const messageText = document.getElementById('messageText');
+        const startBtn = document.getElementById('startBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const restartBtn = document.getElementById('restartBtn');
+        const roundCount = document.getElementById('roundCount');
+        const playerBalls = document.getElementById('playerBalls');
+        const aiBalls = document.getElementById('aiBalls');
+        const gameStatus = document.getElementById('gameStatus');
+        const turnText = document.getElementById('turnText');
+
+        // 初始化游戏
+        function initGame() {
+            // 清除现有小球
+            gameState.balls = [];
+            document.querySelectorAll('.ball').forEach(ball => ball.remove());
+            
+            // 获取设置值
+            const playerHealth = parseInt(document.getElementById('playerHealth').value);
+            const playerAttack = parseInt(document.getElementById('playerAttack').value);
+            const playerBounce = parseFloat(document.getElementById('playerBounce').value);
+            const playerSize = parseInt(document.getElementById('playerSize').value);
+            
+            const aiHealth = parseInt(document.getElementById('aiHealth').value);
+            const aiAttack = parseInt(document.getElementById('aiAttack').value);
+            
+            // 创建玩家小球
+            for (let i = 0; i < config.playerBalls; i++) {
+                createBall({
+                    type: 'player',
+                    x: 100 + i * 60,
+                    y: gameArena.offsetHeight / 2 + (i % 2 === 0 ? -60 : 60),
+                    health: playerHealth,
+                    attack: playerAttack,
+                    bounce: playerBounce,
+                    size: playerSize,
+                    color: '#2196F3'
+                });
+            }
+            
+            // 创建AI小球
+            for (let i = 0; i < config.aiBalls; i++) {
+                createBall({
+                    type: 'ai',
+                    x: gameArena.offsetWidth - 100 - i * 60,
+                    y: gameArena.offsetHeight / 2 + (i % 2 === 0 ? -60 : 60),
+                    health: aiHealth,
+                    attack: aiAttack,
+                    bounce: 0.8,
+                    size: 60,
+                    color: '#F44336'
+                });
+            }
+            
+            // 重置游戏状态
+            gameState.currentTurn = 'player';
+            gameState.round = 1;
+            gameState.playerBallsRemaining = config.playerBalls;
+            gameState.aiBallsRemaining = config.aiBalls;
+            gameState.gameStarted = true;
+            gameState.gameOver = false;
+            
+            // 更新UI
+            updateGameInfo();
+            gameMessage.style.display = 'none';
+            gameArena.classList.add('player-turn');
+            gameArena.classList.remove('ai-turn');
+            turnText.textContent = '玩家回合';
+            gameStatus.textContent = '进行中';
+            
+            // 高亮显示玩家小球
+            highlightTurnBalls();
+        }
+
+        // 创建小球
+        function createBall(options) {
+            const ball = document.createElement('div');
+            ball.className = `ball ${options.type}`;
+            ball.style.width = `${options.size}px`;
+            ball.style.height = `${options.size}px`;
+            ball.style.left = `${options.x}px`;
+            ball.style.top = `${options.y}px`;
+            
+            ball.innerHTML = `
+                <div class="ball-content">
+                    <div>HP: ${options.health}</div>
+                    <div>ATK: ${options.attack}</div>
+                </div>
+            `;
+            
+            gameArena.appendChild(ball);
+            
+            // 添加到游戏状态
+            gameState.balls.push({
+                element: ball,
+                x: options.x,
+                y: options.y,
+                vx: 0,
+                vy: 0,
+                health: options.health,
+                attack: options.attack,
+                bounce: options.bounce,
+                size: options.size,
+                type: options.type,
+                fired: false,
+                radius: options.size / 2
+            });
+            
+            // 添加事件监听器
+            ball.addEventListener('mousedown', startDrag);
+        }
+
+        // 开始拖拽
+        function startDrag(e) {
+            if (gameState.gameOver || gameState.currentTurn !== 'player') return;
+            
+            const ballElement = e.target.closest('.ball');
+            if (!ballElement) return;
+            
+            const ball = gameState.balls.find(b => b.element === ballElement);
+            if (!ball || ball.type !== 'player' || ball.fired) return;
+            
+            gameState.isDragging = true;
+            gameState.dragBall = ball;
+            gameState.startX = e.clientX;
+            gameState.startY = e.clientY;
+            
+            document.addEventListener('mousemove', drag);
+            document.addEventListener('mouseup', endDrag);
+        }
+
+        // 拖拽中
+        function drag(e) {
+            if (!gameState.isDragging || !gameState.dragBall) return;
+            
+            const ball = gameState.dragBall;
+            const dx = e.clientX - gameState.startX;
+            const dy = e.clientY - gameState.startY;
+            
+            // 计算小球新位置（限制在游戏区域内）
+            let newX = ball.x + dx;
+            let newY = ball.y + dy;
+            
+            // 边界检查
+            newX = Math.max(ball.radius, Math.min(gameArena.offsetWidth - ball.radius, newX));
+            newY = Math.max(ball.radius, Math.min(gameArena.offsetHeight - ball.radius, newY));
+            
+            // 更新位置
+            ball.x = newX;
+            ball.y = newY;
+            ball.element.style.left = `${newX - ball.radius}px`;
+            ball.element.style.top = `${newY - ball.radius}px`;
+            
+            // 更新起点
+            gameState.startX = e.clientX;
+            gameState.startY = e.clientY;
+        }
+
+        // 结束拖拽（发射）
+        function endDrag() {
+            if (!gameState.isDragging || !gameState.dragBall) return;
+            
+            const ball = gameState.dragBall;
+            
+            // 计算速度（与拖动方向相反）
+            const dx = gameState.startX - ball.x;
+            const dy = gameState.startY - ball.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            
+            if (distance > 10) { // 最小拖动距离
+                ball.vx = -dx * 0.1;
+                ball.vy = -dy * 0.1;
+                ball.fired = true;
+                
+                // 减少可用小球计数
+                if (ball.type === 'player') {
+                    gameState.playerBallsRemaining--;
+                }
+                
+                // 检查回合是否结束
+                checkTurnEnd();
+            }
+            
+            // 清理
+            gameState.isDragging = false;
+            gameState.dragBall = null;
+            document.removeEventListener('mousemove', drag);
+            document.removeEventListener('mouseup', endDrag);
+            
+            // 更新UI
+            updateGameInfo();
+        }
+
+        // 游戏主循环
+        function gameLoop() {
+            if (!gameState.gameStarted || gameState.gameOver) return;
+            
+            // 更新所有小球位置
+            gameState.balls.forEach(ball => {
+                if (Math.abs(ball.vx) < config.minSpeed && Math.abs(ball.vy) < config.minSpeed) {
+                    ball.vx = 0;
+                    ball.vy = 0;
+                } else {
+                    // 应用摩擦力
+                    ball.vx *= config.friction;
+                    ball.vy *= config.friction;
+                    
+                    // 更新位置
+                    ball.x += ball.vx;
+                    ball.y += ball.vy;
+                    
+                    // 边界碰撞检测
+                    if (ball.x - ball.radius < 0) {
+                        ball.x = ball.radius;
+                        ball.vx = -ball.vx * ball.bounce;
+                    } else if (ball.x + ball.radius > gameArena.offsetWidth) {
+                        ball.x = gameArena.offsetWidth - ball.radius;
+                        ball.vx = -ball.vx * ball.bounce;
+                    }
+                    
+                    if (ball.y - ball.radius < 0) {
+                        ball.y = ball.radius;
+                        ball.vy = -ball.vy * ball.bounce;
+                    } else if (ball.y + ball.radius > gameArena.offsetHeight) {
+                        ball.y = gameArena.offsetHeight - ball.radius;
+                        ball.vy = -ball.vy * ball.bounce;
+                    }
+                    
+                    // 更新元素位置
+                    ball.element.style.left = `${ball.x - ball.radius}px`;
+                    ball.element.style.top = `${ball.y - ball.radius}px`;
+                }
+            });
+            
+            // 检测碰撞
+            detectCollisions();
+            
+            requestAnimationFrame(gameLoop);
+        }
+
+        // 检测碰撞
+        function detectCollisions() {
+            for (let i = 0; i < gameState.balls.length; i++) {
+                const ballA = gameState.balls[i];
+                
+                for (let j = i + 1; j < gameState.balls.length; j++) {
+                    const ballB = gameState.balls[j];
+                    
+                    // 计算距离
+                    const dx = ballB.x - ballA.x;
+                    const dy = ballB.y - ballA.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    // 碰撞检测
+                    if (distance < ballA.radius + ballB.radius) {
+                        // 处理碰撞物理
+                        const angle = Math.atan2(dy, dx);
+                        const sin = Math.sin(angle);
+                        const cos = Math.cos(angle);
+                        
+                        // 旋转速度
+                        const vx1 = ballA.vx * cos + ballA.vy * sin;
+                        const vy1 = ballA.vy * cos - ballA.vx * sin;
+                        const vx2 = ballB.vx * cos + ballB.vy * sin;
+                        const vy2 = ballB.vy * cos - ballB.vx * sin;
+                        
+                        // 碰撞后的速度（一维弹性碰撞公式）
+                        const finalVx1 = ((ballA.size - ballB.size) * vx1 + 2 * ballB.size * vx2) / (ballA.size + ballB.size);
+                        const finalVx2 = ((ballB.size - ballA.size) * vx2 + 2 * ballA.size * vx1) / (ballA.size + ballB.size);
+                        
+                        // 更新速度
+                        ballA.vx = finalVx1 * cos - vy1 * sin;
+                        ballA.vy = vy1 * cos + finalVx1 * sin;
+                        ballB.vx = finalVx2 * cos - vy2 * sin;
+                        ballB.vy = vy2 * cos + finalVx2 * sin;
+                        
+                        // 应用弹性系数
+                        ballA.vx *= ballA.bounce;
+                        ballA.vy *= ballA.bounce;
+                        ballB.vx *= ballB.bounce;
+                        ballB.vy *= ballB.bounce;
+                        
+                        // 伤害计算（只有不同阵营的小球碰撞才造成伤害）
+                        if (ballA.type !== ballB.type) {
+                            // 攻击方造成伤害
+                            if (ballA.type === 'player') {
+                                ballB.health -= ballA.attack;
+                            } else {
+                                ballA.health -= ballB.attack;
+                            }
+                            
+                            // 更新UI
+                            updateBallHealth(ballA);
+                            updateBallHealth(ballB);
+                            
+                            // 检查小球是否被摧毁
+                            if (ballA.health <= 0) {
+                                destroyBall(ballA);
+                            }
+                            if (ballB.health <= 0) {
+                                destroyBall(ballB);
+                            }
+                            
+                            // 检查游戏是否结束
+                            checkGameEnd();
+                        }
+                        
+                        // 分离小球防止粘连
+                        const overlap = (ballA.radius + ballB.radius - distance) / 2;
+                        ballA.x -= overlap * cos;
+                        ballA.y -= overlap * sin;
+                        ballB.x += overlap * cos;
+                        ballB.y += overlap * sin;
+                    }
+                }
+            }
+        }
+
+        // 更新小球生命值显示
+        function updateBallHealth(ball) {
+            const content = ball.element.querySelector('.ball-content');
+            if (content) {
+                content.innerHTML = `
+                    <div>HP: ${Math.max(0, ball.health)}</div>
+                    <div>ATK: ${ball.attack}</div>
+                `;
+            }
+        }
+
+        // 销毁小球
+        function destroyBall(ball) {
+            // 添加销毁动画
+            ball.element.style.transition = 'transform 0.5s, opacity 0.5s';
+            ball.element.style.transform = 'scale(0)';
+            ball.element.style.opacity = '0';
+            
+            // 从游戏状态中移除
+            setTimeout(() => {
+                ball.element.remove();
+                const index = gameState.balls.indexOf(ball);
+                if (index !== -1) {
+                    gameState.balls.splice(index, 1);
+                    
+                    // 更新剩余小球计数
+                    if (ball.type === 'player') {
+                        gameState.playerBallsRemaining--;
+                    } else {
+                        gameState.aiBallsRemaining--;
+                    }
+                    
+                    updateGameInfo();
+                }
+            }, 500);
+        }
+
+        // 检查回合是否结束
+        function checkTurnEnd() {
+            // 检查是否所有小球都已发射或停止
+            const allFiredOrStopped = gameState.balls.every(ball => 
+                ball.fired && Math.abs(ball.vx) < config.minSpeed && Math.abs(ball.vy) < config.minSpeed
+            );
+            
+            if (allFiredOrStopped) {
+                // 切换回合
+                gameState.currentTurn = gameState.currentTurn === 'player' ? 'ai' : 'player';
+                gameState.round++;
+                
+                // 重置小球发射状态
+                gameState.balls.forEach(ball => {
+                    ball.fired = false;
+                });
+                
+                // 重置可用小球计数
+                gameState.playerBallsRemaining = gameState.balls.filter(b => b.type === 'player').length;
+                gameState.aiBallsRemaining = gameState.balls.filter(b => b.type === 'ai').length;
+                
+                // 更新UI
+                updateGameInfo();
+                turnText.textContent = gameState.currentTurn === 'player' ? '玩家回合' : '电脑回合';
+                gameArena.classList.toggle('player-turn');
+                gameArena.classList.toggle('ai-turn');
+                
+                // 高亮当前回合的小球
+                highlightTurnBalls();
+                
+                // 如果是AI回合，执行AI移动
+                if (gameState.currentTurn === 'ai' && !gameState.gameOver) {
+                    setTimeout(executeAIMove, 1000);
+                }
+            }
+        }
+
+        // 高亮当前回合的小球
+        function highlightTurnBalls() {
+            gameState.balls.forEach(ball => {
+                if ((gameState.currentTurn === 'player' && ball.type === 'player') || 
+                    (gameState.currentTurn === 'ai' && ball.type === 'ai')) {
+                    ball.element.classList.add('highlight');
+                } else {
+                    ball.element.classList.remove('highlight');
+                }
+            });
+        }
+
+        // 执行AI移动
+        function executeAIMove() {
+            // 简单AI：随机选择一个未发射的AI小球
+            const aiBalls = gameState.balls.filter(ball => 
+                ball.type === 'ai' && !ball.fired
+            );
+            
+            if (aiBalls.length === 0) return;
+            
+            const randomBall = aiBalls[Math.floor(Math.random() * aiBalls.length)];
+            
+            // 随机选择目标（玩家小球）
+            const playerBalls = gameState.balls.filter(ball => 
+                ball.type === 'player'
+            );
+            
+            if (playerBalls.length === 0) {
+                // 如果没有玩家小球，随机发射
+                randomBall.vx = (Math.random() - 0.5) * 15;
+                randomBall.vy = (Math.random() - 0.5) * 15;
+            } else {
+                const targetBall = playerBalls[Math.floor(Math.random() * playerBalls.length)];
+                
+                // 计算方向
+                const dx = targetBall.x - randomBall.x;
+                const dy = targetBall.y - randomBall.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                // 设置速度
+                const speed = 10 + Math.random() * 5;
+                randomBall.vx = (dx / distance) * speed;
+                randomBall.vy = (dy / distance) * speed;
+            }
+            
+            randomBall.fired = true;
+            gameState.aiBallsRemaining--;
+            
+            // 更新UI
+            updateGameInfo();
+            
+            // 检查回合是否结束
+            setTimeout(checkTurnEnd, 500);
+        }
+
+        // 检查游戏是否结束
+        function checkGameEnd() {
+            const playerAlive = gameState.balls.some(ball => ball.type === 'player');
+            const aiAlive = gameState.balls.some(ball => ball.type === 'ai');
+            
+            if (!playerAlive || !aiAlive) {
+                gameState.gameOver = true;
+                gameMessage.style.display = 'block';
+                
+                if (!playerAlive) {
+                    messageText.textContent = '电脑获胜!';
+                    messageText.style.color = '#F44336';
+                } else {
+                    messageText.textContent = '玩家获胜!';
+                    messageText.style.color = '#4CAF50';
+                }
+                
+                gameStatus.textContent = '游戏结束';
+            }
+        }
+
+        // 更新游戏信息
+        function updateGameInfo() {
+            roundCount.textContent = gameState.round;
+            playerBalls.textContent = gameState.playerBallsRemaining;
+            aiBalls.textContent = gameState.aiBallsRemaining;
+        }
+
+        // 重置游戏
+        function resetGame() {
+            gameState.balls = [];
+            document.querySelectorAll('.ball').forEach(ball => ball.remove());
+            gameState.gameStarted = false;
+            gameState.gameOver = false;
+            gameMessage.style.display = 'none';
+            gameStatus.textContent = '准备开始';
+            gameArena.classList.remove('player-turn', 'ai-turn');
+            
+            // 重置UI
+            roundCount.textContent = '1';
+            playerBalls.textContent = config.playerBalls;
+            aiBalls.textContent = config.aiBalls;
+            turnText.textContent = '玩家回合';
+        }
+
+        // 事件监听器
+        startBtn.addEventListener('click', () => {
+            if (!gameState.gameStarted) {
+                initGame();
+                gameLoop();
+            }
+        });
+        
+        resetBtn.addEventListener('click', resetGame);
+        restartBtn.addEventListener('click', () => {
+            resetGame();
+            initGame();
+            gameLoop();
+        });
+
+        // 初始化
+        updateGameInfo();
+    </script>
+</body>
+</html>

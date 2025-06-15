@@ -56,8 +56,19 @@ console.log(y); // 报错：y is not defined */
     }, 1000);
 } */
 
-for (let i = 0; i < 3; i++) {
+/* for (let i = 0; i < 3; i++) {
     setTimeout(function () {
         console.log(i); // 输出 0, 1, 2
     }, 1000);
-}   
+}    */
+
+    function f1() {
+        let count = 0;
+        return function() {
+            count++;
+            return count;
+        };
+    }
+    const f2 = f1();
+    console.log(f2()); // 1
+    console.log(f2()); // 2
