@@ -1,0 +1,159 @@
+body {
+    margin: 0;
+    padding: 0;
+    background: #e0f7fa;
+    font-family: '微软雅黑', Arial, sans-serif;
+  }
+  
+  .game-container {
+    position: relative;
+    width: 1200px;
+    height: 700px;
+    margin: 30px auto;
+    background: #b3e5fc;
+    border-radius: 30px;
+    box-shadow: 0 0 20px #90caf9;
+    overflow: hidden;
+  }
+  
+  .player-info {
+    position: absolute;
+    top: 10px;
+    width: 350px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    z-index: 10;
+  }
+  
+  .player-left {
+    left: 20px;
+    flex-direction: row;
+  }
+  
+  .player-right {
+    right: 20px;
+    flex-direction: row-reverse;
+  }
+  
+  .avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 3px solid #fff;
+    margin: 0 10px;
+  }
+  
+  .nickname {
+    font-size: 22px;
+    font-weight: bold;
+    color: #1976d2;
+    margin: 0 10px;
+  }
+  
+  .card-list {
+    display: flex;
+    gap: 8px;
+  }
+  
+  .card {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: #fff;
+    border: 2px solid #90caf9;
+  }
+  
+  .round-info {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 28px;
+    color: #0288d1;
+    font-weight: bold;
+    z-index: 10;
+  }
+  
+  .battlefield {
+    position: absolute;
+    top: 110px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 1000px;
+    height: 500px;
+    background: #b2ebf2;
+    border-radius: 40px;
+    box-shadow: 0 0 30px #4fc3f7 inset;
+    overflow: hidden;
+  }
+  
+  .seal {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    text-align: center;
+  }
+  
+  .seal img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: #fff;
+    border: 2px solid #0288d1;
+  }
+  
+  .stats {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 2px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #fff;
+    background: #1976d2;
+    border-radius: 10px;
+    padding: 2px 8px;
+    box-shadow: 0 0 6px #0288d1;
+  }
+  
+  .pillar {
+    position: absolute;
+    width: 60px;
+    height: 120px;
+    background: #e0e0e0;
+    border-radius: 30px;
+    border: 4px solid #bdbdbd;
+    box-shadow: 0 0 10px #90caf9;
+  }
+  
+  .water-effect {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 600px;
+    height: 400px;
+    background: radial-gradient(circle, #b3e5fc 60%, transparent 100%);
+    transform: translate(-50%, -50%);
+    opacity: 0.5;
+    z-index: 1;
+  }
+  
+  .audience {
+    position: absolute;
+    width: 100px;
+    height: 500px;
+    top: 110px;
+    background: transparent;
+    z-index: 5;
+  }
+  
+  .audience.left {
+    left: 0;
+  }
+  
+  .audience.right {
+    right: 0;
+  }
+  
+  /* 可根据需要添加更多细节和动画 */

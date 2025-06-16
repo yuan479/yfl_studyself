@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>火柴人跑酷</title>
+    <style>
+        #game-container {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+            background: linear-gradient(#87CEEB, #E0F6FF);
+        }
+        .character {
+            width: 60px;
+            height: 90px;
+            position: absolute;
+            transition: transform 0.1s;
+        }
+        .platform {
+            position: absolute;
+            background: #4CAF50;
+            height: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <img src="character.png" class="character" id="player">
+    </div>
+    <script src="fire-runner.js"></script>
+</body>
+</html>

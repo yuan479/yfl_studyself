@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>钓鱼小游戏</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="game-container">
+        <!-- 开始场景 -->
+        <div id="start-scene" class="scene">
+            <h1>钓鱼小游戏</h1>
+            <div id="fish-info">
+                <h2>鱼类信息</h2>
+                <table id="fish-table">
+                    <thead>
+                        <tr>
+                            <th>名称</th>
+                            <th>价格</th>
+                            <th>重量</th>
+                        </tr>
+                    </thead>
+                    <tbody id="fish-table-body">
+                    </tbody>
+                </table>
+            </div>
+            <div id="upgrades">
+                <div class="upgrade-section">
+                    <h3>鱼线长度</h3>
+                    <p>当前: <span id="current-line-length">200</span>像素</p>
+                    <button id="upgrade-line">升级鱼线 (100金币)</button>
+                </div>
+                <div class="upgrade-section">
+                    <h3>鱼竿强度</h3>
+                    <p>当前: <span id="current-rod-strength">100</span></p>
+                    <button id="upgrade-rod">升级鱼竿 (100金币)</button>
+                </div>
+            </div>
+            <div id="gold-display">
+                金币: <span id="gold-amount">0</span>
+            </div>
+            <button id="start-game">开始游戏</button>
+        </div>
+
+        <!-- 游戏场景 -->
+        <div id="game-scene" class="scene hidden">
+            <canvas id="game-canvas"></canvas>
+            <div id="game-info">
+                <div id="target-fish">目标: <span id="fish-count">5</span> 条鱼</div>
+                <div id="shake-count">剩余失败次数: <span id="shakes-left">3</span></div>
+            </div>
+        </div>
+    </div>
+    <script src="game.js"></script>
+</body>
+</html> 

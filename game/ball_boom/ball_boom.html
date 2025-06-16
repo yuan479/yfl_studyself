@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>海豹碰碰撞</title>
+  <link rel="stylesheet" href="ball_boom.css">
+</head>
+<body>
+  <div class="game-container">
+    <!-- 顶部玩家信息 -->
+    <div class="player-info player-left">
+      <img class="avatar" src="avatar1.png" alt="玩家1">
+      <span class="nickname">星</span>
+      <div class="card-list">
+        <img src="seal1.png" class="card">
+        <img src="seal2.png" class="card">
+        <img src="seal3.png" class="card">
+      </div>
+    </div>
+    <div class="player-info player-right">
+      <img class="avatar" src="avatar2.png" alt="玩家2">
+      <span class="nickname">丹恒</span>
+      <div class="card-list">
+        <img src="seal4.png" class="card">
+        <img src="seal5.png" class="card">
+        <img src="seal6.png" class="card">
+      </div>
+    </div>
+    <!-- 回合数 -->
+    <div class="round-info">第1轮</div>
+    <!-- 对战场地 -->
+    <div class="battlefield">
+      <!-- 左侧海豹 -->
+      <div class="seal seal-left" style="top: 20%; left: 20%;">
+        <img src="seal1.png">
+        <div class="stats"><span>8</span> <span>35</span></div>
+      </div>
+      <div class="seal seal-left" style="top: 50%; left: 25%;">
+        <img src="seal2.png">
+        <div class="stats"><span>5</span> <span>35</span></div>
+      </div>
+      <div class="seal seal-left" style="top: 75%; left: 20%;">
+        <img src="seal3.png">
+        <div class="stats"><span>6</span> <span>35</span></div>
+      </div>
+      <!-- 右侧海豹 -->
+      <div class="seal seal-right" style="top: 30%; right: 20%;">
+        <img src="seal4.png">
+        <div class="stats"><span>6</span> <span>40</span></div>
+      </div>
+      <div class="seal seal-right" style="top: 60%; right: 25%;">
+        <img src="seal5.png">
+        <div class="stats"><span>4</span> <span>40</span></div>
+      </div>
+      <div class="seal seal-right" style="top: 80%; right: 20%;">
+        <img src="seal6.png">
+        <div class="stats"><span>8</span> <span>40</span></div>
+      </div>
+      <!-- 柱子和水波 -->
+      <div class="pillar" style="top: 15%; left: 10%;"></div>
+      <div class="pillar" style="top: 80%; left: 10%;"></div>
+      <div class="pillar" style="top: 15%; right: 10%;"></div>
+      <div class="pillar" style="top: 80%; right: 10%;"></div>
+      <div class="water-effect"></div>
+    </div>
+    <!-- 观众区 -->
+    <div class="audience left"></div>
+    <div class="audience right"></div>
+  </div>
+</body>
+</html>

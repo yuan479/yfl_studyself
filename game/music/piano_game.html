@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>钢琴块节奏游戏</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #1a1a1a;
+            font-family: 'Arial', sans-serif;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+        }
+
+        #game-container {
+            display: flex;
+            width: 100%;
+            max-width: 1200px;
+            margin: 20px auto;
+            background: #2a2a2a;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        #control-panel {
+            width: 250px;
+            background: #333;
+            padding: 20px;
+            border-right: 1px solid #444;
+        }
+
+        #control-panel h2 {
+            color: #4CAF50;
+            margin-top: 0;
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .control-section {
+            background: #2a2a2a;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .control-section h3 {
+            color: #4CAF50;
+            margin-top: 0;
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+
+        #game-area {
+            flex: 1;
+            padding: 20px;
+        }
+        
+        #info-bar {
+            display: flex;
+            justify-content: space-around;
+            padding: 15px;
+            background: #333;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+
+        .info-item {
+            text-align: center;
+        }
+
+        .info-value {
+            color: #4CAF50;
+            font-weight: bold;
+            font-size: 24px;
+            display: block;
+            margin-top: 5px;
+        }
+        
+        #track-area {
+            position: relative;
+            height: 600px;
+            background: #222;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+        }
+        
+        .lane {
+            width: 16.66%;
+            height: 100%;
+            border-right: 1px solid #444;
+            float: left;
+            position: relative;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 100%);
+        }
+        
+        .note-block {
+            width: 100%;
+            height: 40px;
+            background: #4CAF50;
+            position: absolute;
+            transition: top 0.1s linear;
+            top: -40px;
+            border-radius: 3px;
+            box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+        }
+        
+        #judge-line {
+            position: absolute;
+            bottom: 50px;
+            width: 100%;
+            height: 3px;
+            background: #ff4444;
+            box-shadow: 0 0 10px rgba(255, 68, 68, 0.5);
+        }
+
+        .key-hint {
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+            text-align: center;
+            color: #fff;
+            font-size: 20px;
+            font-weight: bold;
+            text-shadow: 0 0 5px rgba(0,0,0,0.5);
+        }
+
+        .perfect {
+            background: #FFD700 !important;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.7) !important;
+        }
+
+        .miss {
+            background: #FF4444 !important;
+            box-shadow: 0 0 20px rgba(255, 68, 68, 0.7) !important;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 0;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            background: #2a2a2a;
+            border: 2px dashed #4CAF50;
+            border-radius: 5px;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        input[type="file"]::-webkit-file-upload-button {
+            background: #4CAF50;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        input[type="file"]::-webkit-file-upload-button:hover {
+            background: #45a049;
+        }
+
+        .key-bindings {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .key-binding {
+            background: #2a2a2a;
+            padding: 8px;
+            border-radius: 5px;
+            text-align: center;
+            border: 1px solid #444;
+        }
+
+        .key-binding .key {
+            color: #4CAF50;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <div id="control-panel">
+            <h2>钢琴块节奏游戏</h2>
+            
+            <div class="control-section">
+                <h3>音乐选择</h3>
+                <input type="file" id="music-upload" accept="audio/*">
+            </div>
+
+            <div class="control-section">
+                <h3>游戏控制</h3>
+                <button id="start-btn">开始游戏</button>
+                <button id="pause-btn">暂停/继续</button>
+            </div>
+
+            <div class="control-section">
+                <h3>按键说明</h3>
+                <div class="key-bindings">
+                    <div class="key-binding">
+                        <span class="key">A</span>
+                        <span>左1</span>
+                    </div>
+                    <div class="key-binding">
+                        <span class="key">S</span>
+                        <span>左2</span>
+                    </div>
+                    <div class="key-binding">
+                        <span class="key">D</span>
+                        <span>左3</span>
+                    </div>
+                    <div class="key-binding">
+                        <span class="key">J</span>
+                        <span>右1</span>
+                    </div>
+                    <div class="key-binding">
+                        <span class="key">K</span>
+                        <span>右2</span>
+                    </div>
+                    <div class="key-binding">
+                        <span class="key">L</span>
+                        <span>右3</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="game-area">
+            <div id="info-bar">
+                <div class="info-item">
+                    分数
+                    <span id="score" class="info-value">0</span>
+                </div>
+                <div class="info-item">
+                    连击
+                    <span id="combo" class="info-value">0</span>
+                </div>
+                <div class="info-item">
+                    最高连击
+                    <span id="max-combo" class="info-value">0</span>
+                </div>
+            </div>
+            <div id="track-area">
+                <div id="judge-line"></div>
+                <div class="lane"><div class="key-hint">A</div></div>
+                <div class="lane"><div class="key-hint">S</div></div>
+                <div class="lane"><div class="key-hint">D</div></div>
+                <div class="lane"><div class="key-hint">J</div></div>
+                <div class="lane"><div class="key-hint">K</div></div>
+                <div class="lane"><div class="key-hint">L</div></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const KEY_MAPPING = ['a', 's', 'd', 'j', 'k', 'l'];
+        let score = 0;
+        let combo = 0;
+        let maxCombo = 0;
+        let notes = [];
+        let isPlaying = false;
+        let gameLoopId = null;
+        
+        // 初始化音轨
+        const lanes = document.querySelectorAll('.lane');
+        
+        // 音频分析相关
+        let audioContext;
+        let analyser;
+        let source;
+        let audioBuffer;
+        
+        // 更新UI
+        function updateUI() {
+            document.getElementById('score').textContent = score;
+            document.getElementById('combo').textContent = combo;
+            document.getElementById('max-combo').textContent = maxCombo;
+        }
+        
+        document.getElementById('music-upload').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                initAudio(file);
+            }
+        });
+        
+        document.getElementById('start-btn').addEventListener('click', () => {
+            if (audioBuffer && !isPlaying) {
+                startGame();
+            }
+        });
+
+        document.getElementById('pause-btn').addEventListener('click', () => {
+            if (isPlaying) {
+                pauseGame();
+            } else {
+                resumeGame();
+            }
+        });
+        
+        // 初始化音频分析
+        function initAudio(file) {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            analyser = audioContext.createAnalyser();
+            analyser.fftSize = 2048;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                audioContext.decodeAudioData(e.target.result, function(buffer) {
+                    audioBuffer = buffer;
+                });
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        function startGame() {
+            if (!audioBuffer) return;
+            
+            isPlaying = true;
+            source = audioContext.createBufferSource();
+            source.buffer = audioBuffer;
+            source.connect(analyser);
+            analyser.connect(audioContext.destination);
+            
+            source.start(0);
+            gameLoop();
+        }
+
+        function pauseGame() {
+            if (!isPlaying) return;
+            
+            isPlaying = false;
+            source.stop();
+            cancelAnimationFrame(gameLoopId);
+        }
+
+        function resumeGame() {
+            if (isPlaying) return;
+            
+            isPlaying = true;
+            source = audioContext.createBufferSource();
+            source.buffer = audioBuffer;
+            source.connect(analyser);
+            analyser.connect(audioContext.destination);
+            
+            source.start(0);
+            gameLoop();
+        }
+        
+        // 游戏主循环
+        function gameLoop() {
+            if (!isPlaying) return;
+            
+            const bufferLength = analyser.frequencyBinCount;
+            const dataArray = new Uint8Array(bufferLength);
+            analyser.getByteTimeDomainData(dataArray);
+            
+            // 根据音频波形生成音符
+            if (Math.random() < 0.05) {
+                createNote(Math.floor(Math.random() * 6));
+            }
+            
+            updateNotes();
+            gameLoopId = requestAnimationFrame(gameLoop);
+        }
+        
+        function createNote(laneIndex) {
+            const note = document.createElement('div');
+            note.className = 'note-block';
+            note.style.top = '-40px';
+            lanes[laneIndex].appendChild(note);
+            notes.push({
+                element: note,
+                lane: laneIndex,
+                active: true,
+                hit: false
+            });
+        }
+        
+        function updateNotes() {
+            notes.forEach((note, index) => {
+                if (!note.active) return;
+                
+                const rect = note.element.getBoundingClientRect();
+                const currentPos = parseFloat(note.element.style.top) || -40;
+                note.element.style.top = currentPos + 3 + 'px';
+                
+                // 碰撞检测
+                const judgeLinePos = document.getElementById('judge-line').getBoundingClientRect().top;
+                const notePos = rect.top;
+                
+                // 如果音符超出屏幕且未被击中
+                if (currentPos > window.innerHeight && !note.hit) {
+                    note.element.remove();
+                    note.active = false;
+                    notes.splice(index, 1);
+                    combo = 0;
+                    updateUI();
+                }
+            });
+        }
+        
+        // 键盘事件监听
+        document.addEventListener('keydown', (e) => {
+            if (!isPlaying) return;
+            
+            const keyIndex = KEY_MAPPING.indexOf(e.key.toLowerCase());
+            if (keyIndex !== -1) {
+                checkNoteHit(keyIndex);
+            }
+        });
+        
+        function checkNoteHit(laneIndex) {
+            const judgeLinePos = document.getElementById('judge-line').getBoundingClientRect().top;
+            
+            notes.forEach((note, index) => {
+                if (!note.active || note.hit || note.lane !== laneIndex) return;
+                
+                const noteRect = note.element.getBoundingClientRect();
+                const distance = Math.abs(noteRect.top - judgeLinePos);
+                
+                if (distance < 30) { // 判定范围
+                    note.hit = true;
+                    note.element.classList.add('perfect');
+                    setTimeout(() => {
+                        note.element.remove();
+                        note.active = false;
+                        notes.splice(index, 1);
+                    }, 100);
+                    
+                    score += 100;
+                    combo++;
+                    if (combo > maxCombo) {
+                        maxCombo = combo;
+                    }
+                    updateUI();
+                }
+            });
+        }
+    </script>
+</body>
+</html>
