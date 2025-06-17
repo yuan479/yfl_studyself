@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>谁是卧底 - 小游戏</title>
+    <link rel="stylesheet" href="wodi.css">
+</head>
+<body>
+    <div class="container">
+        <h1>谁是卧底</h1>
+        <div id="setup" style="display:none;"></div>
+        <div id="gameArea" style="display:none;">
+            <div id="roleInfo"></div>
+            <div id="chatArea">
+                <h2>描述环节</h2>
+                <div id="chatBox"></div>
+                <div id="chatInputBar">
+                    <input type="text" id="descInput" placeholder="用一句话描述你的词语">
+                    <button id="descSubmit">发送</button>
+                </div>
+                <button id="nextRoundBtn" style="display:none;">下一轮</button>
+            </div>
+            <div id="voteArea" style="display:none;">
+                <h2>投票环节</h2>
+                <div id="voteList"></div>
+                <button id="voteBtn">提交投票</button>
+            </div>
+            <div id="resultArea"></div>
+        </div>
+    </div>
+    <script src="wodi.js"></script>
+</body>
+</html> 

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>坦克大战</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- 开始界面 -->
+    <div id="startScreen" class="screen active">
+        <div class="title">坦克大战</div>
+        <div class="button-container">
+            <button id="startGameBtn" class="btn military-btn">开始游戏</button>
+            <button id="createLevelBtn" class="btn military-btn">创建关卡</button>
+        </div>
+    </div>
+
+    <!-- 创建关卡界面 -->
+    <div id="createLevelScreen" class="screen">
+        <div class="editor-container">
+            <div class="left-panel">
+                <div class="element-selection">
+                    <div class="element" data-type="land">陆地</div>
+                    <div class="element" data-type="water">水流</div>
+                    <div class="element" data-type="lava">熔岩</div>
+                    <div class="element" data-type="wall">城墙</div>
+                    <div class="element" data-type="resource">资源</div>
+                    <div class="element" data-type="defense">防御措施</div>
+                    <div class="element" data-type="playerSpawn">我方出生点</div>
+                    <div class="element" data-type="enemySpawn">敌方出生点</div>
+                </div>
+                <button id="saveLevelBtn" class="btn save-btn">保存</button>
+            </div>
+            <div class="right-panel">
+                <canvas id="levelEditor"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- 关卡选择界面 -->
+    <div id="levelSelectScreen" class="screen">
+        <div class="level-grid" id="levelGrid"></div>
+        <button id="backToStartBtn" class="btn back-btn">返回</button>
+    </div>
+
+    <!-- 游戏界面 -->
+    <div id="gameScreen" class="screen">
+        <div class="game-container">
+            <div class="left-menu">
+                <div class="resources">￥<span id="resourceAmount">1000</span></div>
+                <div class="purchase-menu">
+                    <div class="menu-section">
+                        <h3>陆军</h3>
+                        <div class="purchase-item" data-type="tank">
+                            <img src="assets/tank.png" alt="坦克">
+                            <span>坦克 ￥100</span>
+                        </div>
+                        <div class="purchase-item" data-type="fighter">
+                            <img src="assets/fighter.png" alt="战斗机">
+                            <span>战斗机 ￥500</span>
+                        </div>
+                        <div class="purchase-item" data-type="carrier">
+                            <img src="assets/carrier.png" alt="航母">
+                            <span>航母 ￥200</span>
+                        </div>
+                    </div>
+                    <div class="menu-section">
+                        <h3>防御设施</h3>
+                        <div class="purchase-item" data-type="groundTurret">
+                            <img src="assets/ground-turret.png" alt="对地炮塔">
+                            <span>对地炮塔 ￥100</span>
+                        </div>
+                        <div class="purchase-item" data-type="airTurret">
+                            <img src="assets/air-turret.png" alt="对空炮塔">
+                            <span>对空炮塔 ￥500</span>
+                        </div>
+                        <div class="purchase-item" data-type="seaTurret">
+                            <img src="assets/sea-turret.png" alt="海上炮塔">
+                            <span>海上炮塔 ￥200</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="game-area">
+                <canvas id="gameCanvas"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/game.js"></script>
+    <script src="js/editor.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html> 

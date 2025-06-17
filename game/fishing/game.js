@@ -4,6 +4,8 @@ const gameState = {
     gold: 0,
     lineLength: 200,
     rodStrength: 100,
+    lineUpgradeLevel: 0,  // Track upgrade level for fishing line
+    rodUpgradeLevel: 0,   // Track upgrade level for rod strength
     boat: {
         x: 0,
         width: 120,    // 增加宽度
@@ -31,15 +33,15 @@ const gameState = {
 
 // Fish types
 const fishTypes = [
-    { name: '小鱼', price: 10, weight: 50, color: '#3498db', speed: 1.5, fixedY: null, size: 2 },
-    { name: '热带鱼', price: 15, weight: 60, color: '#f39c12', speed: 1.3, fixedY: null, size: 2.3 },
-    { name: '金鱼', price: 20, weight: 80, color: '#ffd700', speed: 1.2, fixedY: null, size: 2.6 },
-    { name: '中鱼', price: 25, weight: 100, color: '#2ecc71', speed: 1.0, fixedY: null, size: 3 },
-    { name: '河豚', price: 30, weight: 120, color: '#b2bec3', speed: 0.9, fixedY: null, size: 3.5 },
-    { name: '大鱼', price: 50, weight: 150, color: '#e74c3c', speed: 0.8, fixedY: null, size: 3.9 },
-    { name: '章鱼', price: 60, weight: 180, color: '#8e44ad', speed: 0.7, fixedY: null, size: 4.4 },
-    { name: '乌龟', price: 80, weight: 220, color: '#27ae60', speed: 0.6, fixedY: null, size: 4.8 },
-    { name: '鲨鱼', price: 100, weight: 300, color: '#95a5a6', speed: 0.5, fixedY: null, size: 5.2 }
+    { name: '白鱼', price: 10, weight: 50, color: '#FFFFFF', speed: 1.5, fixedY: null, size: 2 },
+    { name: '红鱼', price: 15, weight: 60, color: '#FF0000', speed: 1.3, fixedY: null, size: 2.3 },
+    { name: '橙鱼', price: 20, weight: 80, color: '#FFA500', speed: 1.2, fixedY: null, size: 2.6 },
+    { name: '黄鱼', price: 25, weight: 100, color: '#FFFF00', speed: 1.0, fixedY: null, size: 3 },
+    { name: '绿鱼', price: 30, weight: 120, color: '#00FF00', speed: 0.9, fixedY: null, size: 3.5 },
+    { name: '青鱼', price: 50, weight: 150, color: '#00FFFF', speed: 0.8, fixedY: null, size: 3.9 },
+    { name: '蓝鱼', price: 60, weight: 180, color: '#0000FF', speed: 0.7, fixedY: null, size: 4.4 },
+    { name: '紫鱼', price: 80, weight: 220, color: '#800080', speed: 0.6, fixedY: null, size: 4.8 },
+    { name: '黑鱼', price: 100, weight: 300, color: '#000000', speed: 0.5, fixedY: null, size: 5.2 }
 ];
 
 // Canvas setup
@@ -69,41 +71,138 @@ const upgradeRodButton = document.getElementById('upgrade-rod');
 const fishCount = document.getElementById('fish-count');
 const shakesLeft = document.getElementById('shakes-left');
 
-// 添加图片资源
-const images = {
-    boat: new Image(),
-    fishes: []
-};
-
-// 加载图片
-function loadImages() {
-    images.boat.src = 'asstte/船.png';
+// 绘制船的函数
+function drawBoat(x, y, width, height, angle = 0) {
+    ctx.save();
+    ctx.translate(x + width/2, y + height/2);
+    ctx.rotate(angle);
     
-    // 加载鱼的图片
-    for (let i = 1; i <= 9; i++) {
-        const fishImg = new Image();
-        fishImg.src = `asstte/鱼${i}.png`;
-        images.fishes.push(fishImg);
-    }
+    // 船身
+    ctx.beginPath();
+    ctx.moveTo(-width/2, -height/2);
+    ctx.lineTo(width/2, -height/2);
+    ctx.lineTo(width/2, height/2);
+    ctx.lineTo(-width/2, height/2);
+    ctx.closePath();
+    ctx.fillStyle = '#8B4513';  // 棕色
+    ctx.fill();
+    
+    // 船舱
+    ctx.beginPath();
+    ctx.moveTo(-width/3, -height/2);
+    ctx.lineTo(width/3, -height/2);
+    ctx.lineTo(width/3, -height/4);
+    ctx.lineTo(-width/3, -height/4);
+    ctx.closePath();
+    ctx.fillStyle = '#A0522D';  // 深棕色
+    ctx.fill();
+    
+    ctx.restore();
 }
 
-// Initialize fish table
-function initializeFishTable() {
-    fishTableBody.innerHTML = '';
-    fishTypes.forEach((fish, index) => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <img src="asstte/鱼${index + 1}.png" alt="${fish.name}" style="width: 40px; height: 20px; object-fit: contain;">
-                    ${fish.name}
-                </div>
-            </td>
-            <td>${fish.price}</td>
-            <td>${fish.weight}</td>
-        `;
-        fishTableBody.appendChild(row);
+// 绘制鱼的函数
+function drawFish(x, y, width, height, color, direction) {
+    ctx.save();
+    ctx.translate(x + width/2, y + height/2);
+    ctx.scale(direction === 'left' ? -1 : 1, 1);
+    
+    // 鱼身
+    ctx.beginPath();
+    ctx.moveTo(-width/2, 0);
+    ctx.quadraticCurveTo(0, -height/2, width/2, 0);
+    ctx.quadraticCurveTo(0, height/2, -width/2, 0);
+    ctx.fillStyle = color;
+    ctx.fill();
+    
+    // 鱼尾
+    ctx.beginPath();
+    ctx.moveTo(-width/2, 0);
+    ctx.lineTo(-width/2 - width/4, -height/4);
+    ctx.lineTo(-width/2 - width/4, height/4);
+    ctx.closePath();
+    ctx.fillStyle = color;
+    ctx.fill();
+    
+    // 鱼眼
+    ctx.beginPath();
+    ctx.arc(width/4, -height/6, height/8, 0, Math.PI * 2);
+    ctx.fillStyle = 'white';
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(width/4, -height/6, height/16, 0, Math.PI * 2);
+    ctx.fillStyle = 'black';
+    ctx.fill();
+    
+    ctx.restore();
+}
+
+// 绘制游戏场景
+function draw() {
+    // Clear canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Draw water surface (top 20%)
+    const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height * 0.2);
+    gradient.addColorStop(0, '#87CEEB');  // 浅蓝色
+    gradient.addColorStop(1, '#1E90FF');  // 深蓝色
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, canvas.width, canvas.height * 0.2);
+
+    // Draw ocean (middle 70%)
+    ctx.fillStyle = '#00008B';  // 深蓝色
+    ctx.fillRect(0, canvas.height * 0.2, canvas.width, canvas.height * 0.7);
+
+    // Draw seabed (bottom 10%)
+    ctx.fillStyle = '#8B4513';  // 棕色
+    ctx.fillRect(0, canvas.height * 0.9, canvas.width, canvas.height * 0.1);
+
+    // Draw boat
+    const boatY = canvas.height * 0.2 - gameState.boat.height / 2;
+    drawBoat(gameState.boat.x, boatY, gameState.boat.width, gameState.boat.height, gameState.boat.shakeAngle);
+
+    // Draw fishes
+    gameState.fishes.forEach(fish => {
+        drawFish(fish.x, fish.y, fish.width, fish.height, fish.color, fish.direction.x < 0 ? 'left' : 'right');
     });
+
+    // Draw hook and line if casting
+    if (gameState.hook.isCasting || gameState.hook.isReeling) {
+        ctx.beginPath();
+        ctx.moveTo(gameState.boat.x + gameState.boat.width / 2, boatY + gameState.boat.height / 2);
+        ctx.lineTo(gameState.hook.x, gameState.hook.y);
+        ctx.strokeStyle = '#FFFFFF';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // Draw hook
+        ctx.beginPath();
+        ctx.arc(gameState.hook.x, gameState.hook.y, 5, 0, Math.PI * 2);
+        ctx.fillStyle = '#FFD700';
+        ctx.fill();
+    }
+
+    // Draw caught fish if any
+    if (gameState.hook.caughtFish) {
+        drawFish(
+            gameState.hook.caughtFish.x,
+            gameState.hook.caughtFish.y,
+            gameState.hook.caughtFish.width,
+            gameState.hook.caughtFish.height,
+            gameState.hook.caughtFish.color,
+            gameState.hook.caughtFish.direction.x < 0 ? 'left' : 'right'
+        );
+    }
+
+    // Draw UI
+    ctx.fillStyle = '#FFFFFF';
+    ctx.font = '20px Arial';
+    ctx.fillText(`目标: ${gameState.targetFishCount - gameState.currentFishCount}条鱼`, 10, 30);
+    ctx.fillText(`剩余晃动次数: ${gameState.shakeCount}`, 10, 60);
+}
+
+// Calculate upgrade costs
+function calculateUpgradeCost(level) {
+    return Math.floor(100 * Math.pow(1.5, level));  // Base cost 100, increases by 50% each level
 }
 
 // Update UI elements
@@ -113,83 +212,44 @@ function updateUI() {
     currentRodStrength.textContent = gameState.rodStrength;
     fishCount.textContent = gameState.targetFishCount - gameState.currentFishCount;
     shakesLeft.textContent = gameState.shakeCount;
+    
+    // Update upgrade button costs
+    const lineCost = calculateUpgradeCost(gameState.lineUpgradeLevel);
+    const rodCost = calculateUpgradeCost(gameState.rodUpgradeLevel);
+    upgradeLineButton.textContent = `升级鱼线 (${lineCost}金币)`;
+    upgradeRodButton.textContent = `升级鱼竿 (${rodCost}金币)`;
 }
 
-// Generate random fish
+// Generate a random fish
 function generateFish() {
-    // 根据鱼的大小设置生成概率
-    const fishProbabilities = [
-        0.5,  // 小鱼 (鱼1) - 50%概率
-        0.3,  // 中鱼 (鱼2) - 30%概率
-        0.15, // 大鱼 (鱼3) - 15%概率
-        0.05  // 超大鱼 (鱼4) - 5%概率
-    ];
-
-    // 随机选择鱼的类型
-    const random = Math.random();
-    let cumulativeProbability = 0;
-    let selectedType = 0;
-
-    for (let i = 0; i < fishProbabilities.length; i++) {
-        cumulativeProbability += fishProbabilities[i];
-        if (random <= cumulativeProbability) {
-            selectedType = i;
+    // 使用加权随机选择，让大鱼出现的概率更高
+    const weights = [2.6, 2.4, 2.2, 2, 1.8, 1.6, 1.4, 1.2, 1]; // 权重数组，越大的鱼权重越高
+    const totalWeight = weights.reduce((a, b) => a + b, 0);
+    let random = Math.random() * totalWeight;
+    
+    let selectedIndex = 0;
+    for (let i = 0; i < weights.length; i++) {
+        random -= weights[i];
+        if (random <= 0) {
+            selectedIndex = i;
             break;
         }
     }
-
-    const fishType = fishTypes[selectedType];
-    const baseSize = 40; // 基础大小
-    const size = baseSize * fishType.size; // 根据鱼的种类调整大小
-
-    // 随机选择从哪个边界生成（0: 左, 1: 右, 2: 上, 3: 下）
-    const spawnEdge = Math.floor(Math.random() * 4);
-    let x, y, directionX, directionY;
-
-    switch (spawnEdge) {
-        case 0: // 左边界
-            x = -size;
-            y = canvas.height * 0.2 + Math.random() * (canvas.height * 0.7 - size);
-            directionX = 1;
-            directionY = Math.random() * 2 - 1;
-            break;
-        case 1: // 右边界
-            x = canvas.width;
-            y = canvas.height * 0.2 + Math.random() * (canvas.height * 0.7 - size);
-            directionX = -1;
-            directionY = Math.random() * 2 - 1;
-            break;
-        case 2: // 上边界
-            x = Math.random() * (canvas.width - size);
-            y = canvas.height * 0.2 - size;
-            directionX = Math.random() * 2 - 1;
-            directionY = 1;
-            break;
-        case 3: // 下边界
-            x = Math.random() * (canvas.width - size);
-            y = canvas.height * 0.9;
-            directionX = Math.random() * 2 - 1;
-            directionY = -1;
-            break;
-    }
-
-    // 归一化方向向量
-    const length = Math.sqrt(directionX * directionX + directionY * directionY);
-    directionX /= length;
-    directionY /= length;
+    
+    const fishType = fishTypes[selectedIndex];
+    const size = fishType.size * 20; // 基础大小乘以20作为实际大小
     
     return {
         ...fishType,
-        x: x,
-        y: y,
+        x: Math.random() * (canvas.width - size),
+        y: canvas.height * 0.2 + Math.random() * (canvas.height * 0.7 - size),
         width: size,
-        height: size * 0.5, // 保持宽高比
-        direction: { x: directionX, y: directionY },
+        height: size / 2,
+        direction: randomDirection(),
         speed: fishType.speed,
         state: 'move',
         stateTimer: randomStateTime('move'),
-        directionChangeTimer: randomDirectionTime(),
-        imageIndex: selectedType // 使用鱼的索引作为图片索引，确保同一种鱼使用相同的图片
+        directionChangeTimer: randomDirectionTime()
     };
 }
 
@@ -216,105 +276,6 @@ function initGame() {
     gameState.hook.isReeling = false;
     gameState.hook.caughtFish = null;
     gameState.hook.hasShaken = false;  // 重置摇晃标记
-}
-
-// Draw game elements
-function draw() {
-    // Clear canvas
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // Draw water surface (top 20%) with gradient
-    const surfaceGradient = ctx.createLinearGradient(0, 0, 0, canvas.height * 0.2);
-    surfaceGradient.addColorStop(0, '#87CEEB');
-    surfaceGradient.addColorStop(1, '#1E90FF');
-    ctx.fillStyle = surfaceGradient;
-    ctx.fillRect(0, 0, canvas.width, canvas.height * 0.2);
-
-    // Draw ocean (middle 70%) with gradient
-    const oceanGradient = ctx.createLinearGradient(0, canvas.height * 0.2, 0, canvas.height * 0.9);
-    oceanGradient.addColorStop(0, '#1E90FF');
-    oceanGradient.addColorStop(1, '#000080');
-    ctx.fillStyle = oceanGradient;
-    ctx.fillRect(0, canvas.height * 0.2, canvas.width, canvas.height * 0.7);
-
-    // Draw seabed (bottom 10%) with gradient
-    const seabedGradient = ctx.createLinearGradient(0, canvas.height * 0.9, 0, canvas.height);
-    seabedGradient.addColorStop(0, '#8B4513');
-    seabedGradient.addColorStop(1, '#654321');
-    ctx.fillStyle = seabedGradient;
-    ctx.fillRect(0, canvas.height * 0.9, canvas.width, canvas.height * 0.1);
-
-    // Draw boat with shake effect
-    const boatY = canvas.height * 0.2 - gameState.boat.height / 2;
-    ctx.save();
-    // 如果船正在摇晃，应用旋转
-    if (gameState.boat.isShaking) {
-        ctx.translate(gameState.boat.x, boatY + gameState.boat.height / 2);
-        ctx.rotate(gameState.boat.shakeAngle);
-        ctx.drawImage(
-            images.boat,
-            -gameState.boat.width / 2,
-            -gameState.boat.height / 2,
-            gameState.boat.width,
-            gameState.boat.height
-        );
-    } else {
-        ctx.drawImage(
-            images.boat,
-            gameState.boat.x - gameState.boat.width / 2,
-            boatY,
-            gameState.boat.width,
-            gameState.boat.height
-        );
-    }
-    ctx.restore();
-
-    // Draw fish
-    gameState.fishes.forEach(fish => {
-        // 根据鱼的方向翻转图片
-        ctx.save();
-        if (fish.direction.x < 0) {
-            ctx.translate(fish.x + fish.width, fish.y);
-            ctx.scale(-1, 1);
-            ctx.drawImage(images.fishes[fish.imageIndex], 0, 0, fish.width, fish.height);
-        } else {
-            ctx.drawImage(images.fishes[fish.imageIndex], fish.x, fish.y, fish.width, fish.height);
-        }
-        ctx.restore();
-    });
-
-    // 如果正在收线且有钓到的鱼，绘制被钓起的鱼
-    if (gameState.hook.isReeling && gameState.hook.caughtFish) {
-        const fish = gameState.hook.caughtFish;
-        ctx.save();
-        if (fish.direction.x < 0) {
-            ctx.translate(fish.x + fish.width, fish.y);
-            ctx.scale(-1, 1);
-            ctx.drawImage(images.fishes[fish.imageIndex], 0, 0, fish.width, fish.height);
-        } else {
-            ctx.drawImage(images.fishes[fish.imageIndex], fish.x, fish.y, fish.width, fish.height);
-        }
-        ctx.restore();
-    }
-
-    // Draw hook and line if casting or reeling
-    if (gameState.hook.isCasting || gameState.hook.isReeling) {
-        ctx.beginPath();
-        ctx.moveTo(gameState.boat.x, boatY + gameState.boat.height / 2);
-        ctx.lineTo(gameState.hook.x, gameState.hook.y);
-        ctx.strokeStyle = '#000';
-        ctx.stroke();
-
-        ctx.fillStyle = '#000';
-        ctx.beginPath();
-        ctx.arc(gameState.hook.x, gameState.hook.y, 5, 0, Math.PI * 2);
-        ctx.fill();
-    }
-}
-
-// 添加缓动函数
-function easeOutQuad(t) {
-    return t * (2 - t);
 }
 
 // Update game state
@@ -445,6 +406,11 @@ function update() {
     }
 }
 
+// 添加缓动函数
+function easeOutQuad(t) {
+    return t * (2 - t);
+}
+
 // 新增：用于记录按键状态
 const keyState = { left: false, right: false };
 
@@ -467,7 +433,6 @@ function gameLoop() {
 
 // Event listeners
 startButton.addEventListener('click', () => {
-    loadImages();  // 加载图片
     startScene.classList.add('hidden');
     gameScene.classList.remove('hidden');
     initGame();
@@ -475,19 +440,21 @@ startButton.addEventListener('click', () => {
 });
 
 upgradeLineButton.addEventListener('click', () => {
-    const upgradeCost = 100;
+    const upgradeCost = calculateUpgradeCost(gameState.lineUpgradeLevel);
     if (gameState.gold >= upgradeCost) {
         gameState.gold -= upgradeCost;
         gameState.lineLength += 50;
+        gameState.lineUpgradeLevel++;
         updateUI();
     }
 });
 
 upgradeRodButton.addEventListener('click', () => {
-    const upgradeCost = 100;
+    const upgradeCost = calculateUpgradeCost(gameState.rodUpgradeLevel);
     if (gameState.gold >= upgradeCost) {
         gameState.gold -= upgradeCost;
         gameState.rodStrength += 50;
+        gameState.rodUpgradeLevel++;
         updateUI();
     }
 });
@@ -535,6 +502,8 @@ function gameOver() {
     gameState.gold = 0;
     gameState.lineLength = 200;
     gameState.rodStrength = 100;
+    gameState.lineUpgradeLevel = 0;  // Reset upgrade levels
+    gameState.rodUpgradeLevel = 0;   // Reset upgrade levels
     startScene.classList.remove('hidden');
     gameScene.classList.add('hidden');
     updateUI();
@@ -554,6 +523,65 @@ function levelComplete() {
 function shakeBoat() {
     gameState.boat.isShaking = true;
     gameState.boat.shakeTimer = 30; // 摇晃持续30帧
+}
+
+// Initialize fish table
+function initializeFishTable() {
+    fishTableBody.innerHTML = '';
+    fishTypes.forEach((fish, index) => {
+        const row = document.createElement('tr');
+        
+        // 创建用于绘制鱼的canvas
+        const fishCanvas = document.createElement('canvas');
+        fishCanvas.width = 60;
+        fishCanvas.height = 30;
+        const fishCtx = fishCanvas.getContext('2d');
+        
+        // 绘制鱼
+        fishCtx.save();
+        fishCtx.translate(fishCanvas.width/2, fishCanvas.height/2);
+        
+        // 鱼身
+        fishCtx.beginPath();
+        fishCtx.moveTo(-fishCanvas.width/3, 0);
+        fishCtx.quadraticCurveTo(0, -fishCanvas.height/2, fishCanvas.width/3, 0);
+        fishCtx.quadraticCurveTo(0, fishCanvas.height/2, -fishCanvas.width/3, 0);
+        fishCtx.fillStyle = fish.color;
+        fishCtx.fill();
+        
+        // 鱼尾
+        fishCtx.beginPath();
+        fishCtx.moveTo(-fishCanvas.width/3, 0);
+        fishCtx.lineTo(-fishCanvas.width/2, -fishCanvas.height/4);
+        fishCtx.lineTo(-fishCanvas.width/2, fishCanvas.height/4);
+        fishCtx.closePath();
+        fishCtx.fillStyle = fish.color;
+        fishCtx.fill();
+        
+        // 鱼眼
+        fishCtx.beginPath();
+        fishCtx.arc(fishCanvas.width/6, -fishCanvas.height/6, fishCanvas.height/8, 0, Math.PI * 2);
+        fishCtx.fillStyle = 'white';
+        fishCtx.fill();
+        fishCtx.beginPath();
+        fishCtx.arc(fishCanvas.width/6, -fishCanvas.height/6, fishCanvas.height/16, 0, Math.PI * 2);
+        fishCtx.fillStyle = 'black';
+        fishCtx.fill();
+        
+        fishCtx.restore();
+        
+        row.innerHTML = `
+            <td>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    ${fishCanvas.outerHTML}
+                    ${fish.name}
+                </div>
+            </td>
+            <td>${fish.price}</td>
+            <td>${fish.weight}</td>
+        `;
+        fishTableBody.appendChild(row);
+    });
 }
 
 // Initialize the game
