@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>坦克战争 - 开始游戏</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#4B5320',
+                        secondary: '#7A7A7A'
+                    },
+                    borderRadius: {
+                        'none': '0px',
+                        'sm': '2px',
+                        DEFAULT: '4px',
+                        'md': '8px',
+                        'lg': '12px',
+                        'xl': '16px',
+                        '2xl': '20px',
+                        '3xl': '24px',
+                        'full': '9999px',
+                        'button': '4px'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #1a1a1a;
+            min-height: 1024px;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+        
+        .game-button {
+            background: linear-gradient(145deg, #4B5320, #3a4119);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .game-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(75, 83, 32, 0.4);
+        }
+        
+        .game-button:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        
+        .military-border {
+            border: 2px solid #4B5320;
+            box-shadow: 0 0 10px rgba(75, 83, 32, 0.3);
+        }
+        
+        .level-card {
+            background: rgba(75, 83, 32, 0.1);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .level-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+        
+        .tech-text {
+            text-shadow: 0 0 10px rgba(75, 83, 32, 0.5);
+        }
+        
+        @keyframes borderGlow {
+            0% { box-shadow: 0 0 5px rgba(75, 83, 32, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(75, 83, 32, 0.8); }
+            100% { box-shadow: 0 0 5px rgba(75, 83, 32, 0.5); }
+        }
+        
+        .glow-effect {
+            animation: borderGlow 2s infinite;
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center">
+    <div class="w-[1440px] min-h-screen relative" style="background-image: url('https://ai-public.mastergo.com/ai/img_res/1420d82eff72f52d86bef5c1f8aecefc.jpg'); background-size: cover; background-position: center;">
+        <div class="absolute inset-0 bg-black bg-opacity-50"></div>
+        
+        <div class="relative z-10 flex flex-col items-center pt-16">
+            <h1 class="text-6xl font-bold text-white mb-4 tech-text tracking-wider">坦克战争</h1>
+            <p class="text-xl text-gray-300 mb-16">现代版坦克大战小游戏</p>
+            
+            <div class="flex flex-col gap-6 items-center">
+                <button id="start-btn" class="game-button text-white py-4 px-16 text-xl font-bold !rounded-button whitespace-nowrap w-64">
+                    开始游戏
+                </button>
+                <button class="game-button text-white py-4 px-16 text-xl font-bold !rounded-button whitespace-nowrap w-64">
+                    选择关卡
+                </button>
+                <button class="game-button text-white py-4 px-16 text-xl font-bold !rounded-button whitespace-nowrap w-64">
+                    游戏设置
+                </button>
+            </div>
+            
+            <div class="mt-16 grid grid-cols-4 gap-8 px-16">
+                <div class="level-card p-6 military-border !rounded-lg text-center">
+                    <h3 class="text-white text-xl mb-4">沙漠风暴</h3>
+                    <p class="text-gray-300 mb-2">难度：★★☆☆☆</p>
+                    <p class="text-gray-300">状态：已解锁</p>
+                </div>
+                <div class="level-card p-6 military-border !rounded-lg text-center">
+                    <h3 class="text-white text-xl mb-4">丛林作战</h3>
+                    <p class="text-gray-300 mb-2">难度：★★★☆☆</p>
+                    <p class="text-gray-300">状态：已解锁</p>
+                </div>
+                <div class="level-card p-6 military-border !rounded-lg text-center">
+                    <h3 class="text-white text-xl mb-4">城市突袭</h3>
+                    <p class="text-gray-300 mb-2">难度：★★★★☆</p>
+                    <p class="text-gray-300">状态：未解锁</p>
+                </div>
+                <div class="level-card p-6 military-border !rounded-lg text-center">
+                    <h3 class="text-white text-xl mb-4">极地战场</h3>
+                    <p class="text-gray-300 mb-2">难度：★★★★★</p>
+                    <p class="text-gray-300">状态：未解锁</p>
+                </div>
+            </div>
+            
+           
+            
+           
+        </div>
+    </div>
+    <script>
+    document.getElementById('start-btn').onclick = function() {
+        window.location.href = 'game.html?level=1';
+    };
+    </script>
+</body>
+</html>

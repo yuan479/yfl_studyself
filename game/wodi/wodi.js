@@ -163,14 +163,14 @@ function getAIDesc(word, history, cb) {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer sk-96c2e1584e234e01a135bfa2d41d2f0a'
+            'Authorization': 'Bearer sk-dcb36f3e371d4e8db05a4b96cf0d3ea5'
         },
         body: JSON.stringify({
             model: 'deepseek-chat',
             messages: [
                 {
                     role: 'system',
-                    content: '你正在玩"谁是卧底"游戏。请用一句话模糊地描述你的词语，不能直接说出词语本身，也不能出现"我的词语是..."等字样。描述风格要多样，有的简短有的详细，可以用个人体验、场景、感受、用途、联想、常见搭配等方式表达，让人不容易直接猜到词语。必须避免和历史描述内容重复或相似，每个人的描述都要用不同的角度、细节或表达方式，而且每个人只能说一个特性，偶尔可以抽象地描述。'
+                    content: '你正在玩"谁是卧底"游戏。请用一句话描述你的词语的一个特性，不能直接说出词语本身，也不能出现"我的词语是..."等字样。描述要简洁，只描述一个最显著或最独特的特征，可以是外观、用途、感受、场景等任意一个方面。必须避免和历史描述内容重复或相似，每个人的描述都要用不同的角度。'
                 },
                 {
                     role: 'user',
@@ -235,7 +235,7 @@ function getAIVote(ai, alive, cb) {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer sk-96c2e1584e234e01a135bfa2d41d2f0a'
+            'Authorization': 'Bearer sk-dcb36f3e371d4e8db05a4b96cf0d3ea5'
         },
         body: JSON.stringify({
             model: 'deepseek-chat',
@@ -333,7 +333,7 @@ fetch('https://api.deepseek.com/chat/completions', {
     method: 'POST',
     headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer sk-96c2e1584e234e01a135bfa2d41d2f0a'
+        'Authorization': 'Bearer sk-dcb36f3e371d4e8db05a4b96cf0d3ea5'
     },
     body: JSON.stringify({
         model: 'deepseek-chat',

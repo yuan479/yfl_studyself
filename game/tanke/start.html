@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>坦克战争 - 开始界面</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #232526 0%, #414345 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+        .start-container {
+            background: rgba(0,0,0,0.85);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+            padding: 48px 40px 36px 40px;
+            text-align: center;
+            color: #fff;
+        }
+        .start-title {
+            font-size: 2.8rem;
+            font-weight: bold;
+            letter-spacing: 4px;
+            margin-bottom: 24px;
+            color: #2ecc71;
+            text-shadow: 0 2px 8px #000;
+        }
+        .start-desc {
+            font-size: 1.2rem;
+            margin-bottom: 32px;
+            color: #eee;
+        }
+        .start-btn {
+            font-size: 1.3rem;
+            padding: 14px 48px;
+            background: linear-gradient(90deg, #2ecc71 60%, #27ae60 100%);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            letter-spacing: 2px;
+            box-shadow: 0 4px 16px rgba(46,204,113,0.15);
+            transition: background 0.2s, transform 0.2s;
+        }
+        .start-btn:hover {
+            background: linear-gradient(90deg, #27ae60 60%, #2ecc71 100%);
+            transform: translateY(-2px) scale(1.04);
+        }
+    </style>
+</head>
+<body>
+    <div class="start-container">
+        <div class="start-title">坦克战争</div>
+        <div class="start-desc">
+            欢迎来到坦克战争！<br>
+            消灭敌方坦克，巧用特殊方块，挑战更高关卡！<br>
+            <br>
+            操作说明：<br>
+            W/A/S/D 控制移动，自动射击，<br>
+            你能闯到第几关？
+        </div>
+        <form id="settings-form" style="margin-bottom:24px;">
+            <div style="margin-bottom:18px;">
+                <label style="font-size:1.1rem;">选择我方坦克类型：</label><br>
+                <select id="player-type" style="font-size:1.1rem;padding:4px 12px;border-radius:6px;margin-top:6px;">
+                    <option value="green">绿色坦克（普通）：常规攻击</option>
+                    <option value="red">红色坦克（爆破）：发射炸弹，爆炸可破坏3x3范围</option>
+                    <option value="white">白色坦克（幽灵）：可穿越可破坏墙体</option>
+                    <option value="blue">蓝色坦克（激光）：激光可破坏前方直线所有可破坏方块</option>
+                </select>
+            </div>
+            <div style="font-size:0.98rem;color:#b2f7ef;margin-bottom:18px;">
+                <b>坦克类型说明：</b><br>
+                绿色坦克：普通攻击，常规玩法。<br>
+                红色坦克：发射炸弹，命中爆炸，破坏3x3范围敌人和方块。<br>
+                白色坦克：可穿越可破坏墙体。<br>
+                蓝色坦克：激光攻击，破坏前方直线所有可破坏方块。
+            </div>
+            <div style="margin-bottom:18px;">
+                <label>敌方坦克数量：<span id="enemy-count-value">3</span></label><br>
+                <input type="range" id="enemy-count" min="1" max="10" value="3" style="width:220px;">
+            </div>
+            <div style="margin-bottom:12px;">
+                <label>爆炸方块数量：<span id="explosive-count-value">1</span></label><br>
+                <input type="range" id="explosive-count" min="0" max="5" value="1" style="width:180px;">
+            </div>
+            <div style="margin-bottom:12px;">
+                <label>治疗方块数量：<span id="healing-count-value">1</span></label><br>
+                <input type="range" id="healing-count" min="0" max="5" value="1" style="width:180px;">
+            </div>
+            <div style="margin-bottom:12px;">
+                <label>金色墙体数量：<span id="pushable-count-value">1</span></label><br>
+                <input type="range" id="pushable-count" min="0" max="3" value="1" style="width:180px;">
+            </div>
+            <div style="margin-bottom:12px;">
+                <label>灰色墙体数量：<span id="indestructible-count-value">1</span></label><br>
+                <input type="range" id="indestructible-count" min="0" max="3" value="1" style="width:180px;">
+            </div>
+        </form>
+        <button class="start-btn" id="start-btn">开始游戏</button>
+    </div>
+    <script>
+        // 滑块联动显示
+        function bindSlider(id, valueId) {
+            const slider = document.getElementById(id);
+            const valueSpan = document.getElementById(valueId);
+            slider.addEventListener('input', () => {
+                valueSpan.textContent = slider.value;
+            });
+        }
+        bindSlider('enemy-count', 'enemy-count-value');
+        bindSlider('explosive-count', 'explosive-count-value');
+        bindSlider('healing-count', 'healing-count-value');
+        bindSlider('pushable-count', 'pushable-count-value');
+        bindSlider('indestructible-count', 'indestructible-count-value');
+
+        // 开始按钮跳转并传递参数
+        document.getElementById('start-btn').onclick = function() {
+            const playerType = document.getElementById('player-type').value;
+            const enemyCount = document.getElementById('enemy-count').value;
+            const explosive = document.getElementById('explosive-count').value;
+            const healing = document.getElementById('healing-count').value;
+            const pushable = document.getElementById('pushable-count').value;
+            const indestructible = document.getElementById('indestructible-count').value;
+            const url = `tanke.html?playerType=${playerType}&enemyCount=${enemyCount}&explosive=${explosive}&healing=${healing}&pushable=${pushable}&indestructible=${indestructible}`;
+            window.location.href = url;
+        };
+    </script>
+</body>
+</html> 

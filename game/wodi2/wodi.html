@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>谁是卧底 - 在线对战游戏</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+<link href="style.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mx-auto px-4 py-8 min-h-screen">
+    <header class="text-center mb-12">
+        <h1 class="logo">谁是卧底</h1>
+        <p class="text-xl text-gray-400">在线多人推理游戏</p>
+    </header>
+
+    <div class="bg-gray-900/50 rounded-xl p-8 mb-8">
+        <div class="flex justify-between items-center mb-8">
+            <div class="flex items-center space-x-6">
+                <div class="text-lg">
+                    <span class="text-gray-400">当前回合：</span>
+                    <span class="text-secondary">第 1 轮</span>
+                </div>
+                <div class="text-lg">
+                    <span class="text-gray-400">剩余玩家：</span>
+                    <span class="text-secondary">6 人</span>
+                </div>
+            </div>
+            <div class="text-2xl font-bold text-secondary">
+                <i class="fas fa-clock mr-2"></i>
+                <span>00:30</span>
+            </div>
+        </div>
+
+        <div class="flex gap-6 mb-8">
+            <div class="w-1/3">
+                <div class="grid grid-cols-2 gap-4" id="playerGrid">
+                    <!-- 玩家卡片将通过JavaScript动态生成 -->
+                </div>
+            </div>
+            <div class="w-2/3 bg-gray-800 rounded-lg p-6">
+                <div class="chat-container" id="chatContainer">
+                    <!-- 聊天消息将通过JavaScript动态生成 -->
+                </div>
+                <div class="flex gap-4">
+                    <input type="text" id="messageInput" class="flex-grow bg-gray-700 text-white rounded-lg px-4 py-2 border-none" placeholder="输入你的描述...">
+                    <button id="sendButton" class="!rounded-button bg-secondary text-primary px-6 py-2 font-bold hover:bg-secondary/90 transition-colors whitespace-nowrap">
+                        发送
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-gray-800 rounded-lg p-6 mb-8">
+            <h3 class="text-xl font-semibold mb-4">你的身份词</h3>
+            <div class="bg-primary p-4 rounded-lg text-center text-2xl font-bold text-secondary" id="playerWord">
+                <!-- 玩家词语将通过JavaScript动态生成 -->
+            </div>
+        </div>
+
+        <div class="flex justify-center space-x-6">
+            <button id="voteButton" class="!rounded-button bg-red-500 text-white px-8 py-3 font-bold text-lg hover:bg-red-600 transition-colors whitespace-nowrap">
+                <i class="fas fa-vote-yea mr-2"></i>投票
+            </button>
+            <button id="rulesButton" class="!rounded-button bg-gray-700 text-white px-8 py-3 font-bold text-lg hover:bg-gray-600 transition-colors whitespace-nowrap">
+                <i class="fas fa-book mr-2"></i>查看规则
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- 投票界面 -->
+<div id="votingModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center">
+    <div class="bg-gray-800 rounded-lg p-6 w-96">
+        <h3 class="text-xl font-semibold mb-4 text-center">请选择要投票的玩家</h3>
+        <div class="grid grid-cols-2 gap-4" id="votingOptions">
+            <!-- 投票选项将通过JavaScript动态生成 -->
+        </div>
+        <div class="mt-6 text-center">
+            <button id="confirmVote" class="!rounded-button bg-secondary text-primary px-6 py-2 font-bold hover:bg-secondary/90 transition-colors">
+                确认投票
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- 游戏结果弹窗 -->
+<div id="resultModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center">
+    <div class="bg-gray-800 rounded-lg p-6 w-96">
+        <h3 class="text-xl font-semibold mb-4 text-center" id="resultTitle"></h3>
+        <p class="text-center mb-6" id="resultMessage"></p>
+        <div class="text-center">
+            <button id="newGame" class="!rounded-button bg-secondary text-primary px-6 py-2 font-bold hover:bg-secondary/90 transition-colors">
+                开始新游戏
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- 投票提示弹窗 -->
+<div id="voteTipModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-50">
+    <div class="bg-gray-800 rounded-lg p-6 w-80 text-center">
+        <h3 class="text-xl font-semibold mb-4">请为你认为的卧底投票</h3>
+        <button id="voteTipConfirm" class="mt-4 px-6 py-2 font-bold rounded bg-yellow-400 text-primary hover:bg-yellow-300">开始投票</button>
+    </div>
+</div>
+<!-- 判定中弹窗 -->
+<div id="judgingModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-50">
+    <div class="bg-gray-800 rounded-lg p-6 w-80 text-center">
+        <h3 class="text-xl font-semibold mb-2">正在判定...</h3>
+        <div class="mt-4 text-yellow-400 text-2xl animate-pulse">请稍候</div>
+    </div>
+</div>
+
+<script src="game.js"></script>
+</body>
+</html>
