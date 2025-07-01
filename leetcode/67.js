@@ -3,7 +3,7 @@
  * @param {string} b
  * @return {string}
  */
-var addBinary = function(a, b) {
+/* var addBinary = function(a, b) {
     let numa = 0
     let numb = 0
     let a1 =  [...a]
@@ -20,4 +20,10 @@ var addBinary = function(a, b) {
 };
 
 console.log(addBinary("11","1")) //"100"
-console.log(addBinary("1010","1011")) //"10101"
+console.log(addBinary("1010","1011")) //"10101" */
+
+var addBinary = function(a, b) {
+    const numA = BigInt("0b" + a);
+     const numB = BigInt("0b" + b);
+     return (numA + numB).toString(2);
+ };
